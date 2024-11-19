@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "libs/glad/glad.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "libs/stb_image.h"
@@ -17,6 +18,8 @@ void setup() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    stbi_set_flip_vertically_on_load(true);
 }
 void cleanup(GLFWwindow* window) {
     printf("shutting down...\n");
