@@ -1,30 +1,30 @@
 #include "../Utils.h"
+using namespace std;
 
-char* readFile(const char* path, char* style) {
-    FILE* file;
-    file = fopen(path, style);
-    if(file == NULL) {
-        printf("Failed to read file from: %s\n", path);
-        // segfault, crash program.
+const char* readFile(const char* path) {
+    std::ifstream file;
+
+    file.open(path);
+
+    if(file.fail()) {
+        cout<<"Failed to read file: "<<path<<endl;
+        return NULL;
     }
 
-    fseek(file, 0L, SEEK_END);
-    size_t fileSize = ftell(file);
-    rewind(file);
-    char* buffer = (char*)malloc((fileSize + 1) * sizeof(char));
+    char* buffer;
     int i = 0;
     int j;
-    while((j = fgetc(file)) != EOF) {
+    while((j = file.get()) != EOF) {
         buffer[i] = j;
         i++;
     }
-
     buffer[i] = '\0';
 
-    rewind(file);
-    fclose(file);
+    file>>buffer;
+    file.close();
 
     return buffer;
+
 }
 
 void checkIfShaderCompileSuccess(unsigned int shader, const char* desc) {

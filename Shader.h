@@ -1,7 +1,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <stdio.h>
+#include <iostream>
 #include <stdbool.h>
 #include "libs/glad/glad.h"
 #include "Utils.h"

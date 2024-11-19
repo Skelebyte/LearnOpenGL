@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
 #include "libs/glad/glad.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "libs/stb_image.h"

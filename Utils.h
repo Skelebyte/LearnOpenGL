@@ -1,15 +1,15 @@
 #ifndef FILEUTILS_H
 #define FILEUTILS_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "libs/glad/glad.h"
 
 using namespace std;
 
-char* readFile(const char* path, char* style);
+const char* readFile(const char* path);
 void checkIfShaderCompileSuccess(unsigned int shader, const char* desc);
 void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram);
 

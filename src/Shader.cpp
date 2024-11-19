@@ -7,13 +7,13 @@ Shader newShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     unsigned int fragment;
 
     vertex = glad_glCreateShader(GL_VERTEX_SHADER);
-    const char* vSrc = readFile(vertexShaderPath, "rb");
+    const char* vSrc = readFile(vertexShaderPath);
     glad_glShaderSource(vertex, 1, &vSrc, NULL);
     glad_glCompileShader(vertex);
     checkIfShaderCompileSuccess(vertex, "Vertex Shader: ");
 
     fragment = glad_glCreateShader(GL_FRAGMENT_SHADER);
-    const char* fSrc = readFile(fragmentShaderPath, "rb");
+    const char* fSrc = readFile(fragmentShaderPath);
     glad_glShaderSource(fragment, 1, &fSrc, NULL);
     glad_glCompileShader(fragment);
     checkIfShaderCompileSuccess(fragment, "Fragment Shader: ");
