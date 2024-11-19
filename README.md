@@ -1,2 +1,2 @@
 # Welcome to my Learning OpenGL project.
-This is tracking my project as i learn OpenGL from [learnopengl.com](https://learnopengl.com).
+This is tracking my project as i learn OpenGL from [learnopengl.com](https://learnopengl.com), but in C instead of C++.
