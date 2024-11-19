@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <math.h>
+#include <stdbool.h>
 #include <GLFW/glfw3.h>
 #include "libs/glad/glad.h"
 #include "Utils.h"
@@ -38,6 +39,13 @@ void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
         printf("Shader Link: %s", infoLog);
     }
 }
+bool isWireframe = false;
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if(key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+        isWireframe = !isWireframe;
+    }
+}
+
 
 float vertices[] = {
     // positions        // colors
@@ -127,9 +135,10 @@ int main() {
     (void*)(3* sizeof(float)));
     glad_glEnableVertexAttribArray(1);
 
-    // glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
-    glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
 
+
+
+    glfwSetKeyCallback(window, keyCallback);
 
 
 
@@ -156,6 +165,11 @@ int main() {
         // glad_glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // game update...
+        if(isWireframe) {
+            glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
+        } else {
+            glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
+        }
 
 
         glfwSwapBuffers(window);
