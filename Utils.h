@@ -8,5 +8,7 @@
 #include "libs/glad/glad.h"
 
 char* readFile(const char* path, char* style);
+void checkIfShaderCompileSuccess(unsigned int shader, const char* desc);
+void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram);
 
 #endif
