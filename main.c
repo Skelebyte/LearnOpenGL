@@ -1,6 +1,7 @@
 #define GLFW_INCLUDE_NONE // remove "OpenGL is already included (Line: 4) error" caused by GLFW and Glad
 #include <stdio.h>
 #include <stddef.h>
+#include <math.h>
 #include <GLFW/glfw3.h>
 #include "libs/glad/glad.h"
 #include "Utils.h"
@@ -39,14 +40,12 @@ void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
 }
 
 float vertices[] = {
-0.5f, 0.5f, 0.0f, // top right
-0.5f, -0.5f, 0.0f, // bottom right
--0.5f, -0.5f, 0.0f, // bottom left
--0.5f, 0.5f, 0.0f // top left
+    0.0f, 0.5f, 0.0f, // top
+    0.5f, -0.5f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f, // bottom left
 };
 unsigned int indices[] = { // note that we start from 0!
-0, 1, 3, // first triangle
-1, 2, 3 // second triangle
+    0, 1, 2, // first triangle
 };
 
 
@@ -121,8 +120,11 @@ int main() {
     glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
     glad_glEnableVertexAttribArray(0);
 
-    glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
+    // glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
+
+
+
 
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents(); // register input/closing input
@@ -132,7 +134,14 @@ int main() {
         glad_glClear(GL_COLOR_BUFFER_BIT);
 
 
+
         glad_glUseProgram(shaderProgram);
+
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glad_glGetUniformLocation(shaderProgram, "ourColor");
+        glad_glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         glad_glBindVertexArray(vao);
         glad_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glad_glBindVertexArray(0);
