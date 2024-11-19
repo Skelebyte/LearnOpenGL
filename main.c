@@ -40,9 +40,10 @@ void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
 }
 
 float vertices[] = {
-    0.0f, 0.5f, 0.0f, // top
-    0.5f, -0.5f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f, // bottom left
+    // positions        // colors
+    0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
+    0.0f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f, // top
 };
 unsigned int indices[] = { // note that we start from 0!
     0, 1, 2, // first triangle
@@ -117,11 +118,17 @@ int main() {
     glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glad_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+    // position attribute
+    glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    (void*)0);
     glad_glEnableVertexAttribArray(0);
+    // color attribute
+    glad_glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+    (void*)(3* sizeof(float)));
+    glad_glEnableVertexAttribArray(1);
 
     // glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
+    glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
 
 
 
