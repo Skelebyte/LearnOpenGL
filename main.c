@@ -18,7 +18,6 @@ void cleanup(GLFWwindow* window) {
     printf("shutting down...\n");
     glfwDestroyWindow(window);
     glfwTerminate();
-    printf("Done!\n");
 }
 void checkIfShaderCompileSuccess(unsigned int shader, const char* desc) {
     int success;
@@ -40,9 +39,14 @@ void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
 }
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f,
+0.5f, 0.5f, 0.0f, // top right
+0.5f, -0.5f, 0.0f, // bottom right
+-0.5f, -0.5f, 0.0f, // bottom left
+-0.5f, 0.5f, 0.0f // top left
+};
+unsigned int indices[] = { // note that we start from 0!
+0, 1, 3, // first triangle
+1, 2, 3 // second triangle
 };
 
 
@@ -100,17 +104,25 @@ int main() {
 
     unsigned int vbo;
     glad_glGenBuffers(1, &vbo);
-    glad_glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glad_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glad_glBindVertexArray(vao);
+
     glad_glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glad_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
+
+    unsigned int ebo;
+    glad_glGenBuffers(1, &ebo);
+
+    glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glad_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
     glad_glEnableVertexAttribArray(0);
+
+    glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
 
     while(!glfwWindowShouldClose(window)) {
         glfwPollEvents(); // register input/closing input
@@ -122,7 +134,10 @@ int main() {
 
         glad_glUseProgram(shaderProgram);
         glad_glBindVertexArray(vao);
-        glad_glDrawArrays(GL_TRIANGLES, 0, 3);
+        glad_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glad_glBindVertexArray(0);
+
+        // glad_glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // game update...
 
