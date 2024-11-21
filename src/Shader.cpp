@@ -1,4 +1,4 @@
-#include "../Shader.h"
+#include "../include/Shader.h"
 
 Shader newShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     Shader temp;

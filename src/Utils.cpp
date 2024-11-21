@@ -1,26 +1,25 @@
-#include "../Utils.h"
+#include "../include/Utils.h"
 using namespace std;
 
 const char* readFile(const char* path) {
     std::ifstream file;
 
-    file.open(path);
+    file.open(path, std::ios::binary | std::ios::ate);
 
     if(file.fail()) {
         cout<<"Failed to read file: "<<path<<endl;
         return NULL;
     }
-
-    char* buffer;
-    int i = 0;
-    int j;
-    while((j = file.get()) != EOF) {
-        buffer[i] = j;
-        i++;
+    streamsize size = (streamsize)file.tellg();
+    file.seekg(0, ios::beg);
+    char* buffer = new char[size + 1];
+    if(!file.read(buffer, size)) {
+        cout<<"Failed to read file: "<<path<<endl;
+        delete[] buffer;
+        return NULL;
     }
-    buffer[i] = '\0';
+    buffer[size] = '\0';
 
-    file>>buffer;
     file.close();
 
     return buffer;
@@ -33,7 +32,7 @@ void checkIfShaderCompileSuccess(unsigned int shader, const char* desc) {
     glad_glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if(!success) {
         glad_glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        printf("%s: %s\n", desc, infoLog);
+        cout<<desc<<": "<<infoLog<<endl;
     }
 }
 void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
@@ -42,6 +41,6 @@ void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram)  {
     glad_glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if(!success) {
         glad_glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        printf("Shader Link: %s", infoLog);
+        cout<<"Shader Link: "<<infoLog<<endl;
     }
 }

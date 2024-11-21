@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <stdbool.h>
-#include "libs/glad/glad.h"
+#include "../libs/glad/glad.h"
 #include "Utils.h"
 
 #define DEFAULT_VERTEX_SHADER_SRC readFile("shaders/Default.vert", "rb");
