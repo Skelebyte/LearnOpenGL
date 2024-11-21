@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <stdbool.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "../libs/glad/glad.h"
 #include "Utils.h"
 
@@ -21,5 +23,6 @@ void useShader(Shader shader);
 void setBool(Shader shader, const char* name, bool value);
 void setInt(Shader shader, const char* name, int value);
 void setFloat(Shader shader, const char* name, float value);
+void setMat4(Shader shader, const char* name, glm::mat4 value);
 
 #endif

@@ -1,5 +1,6 @@
 #include "../include/Shader.h"
 
+
 Shader newShader(const char* vertexShaderPath, const char* fragmentShaderPath) {
     Shader temp;
 
@@ -46,4 +47,7 @@ void setInt(Shader shader, const char* name, int value) {
 
 void setFloat(Shader shader, const char* name, float value) {
     glad_glUniform1f(glad_glGetUniformLocation(shader.id, name), value);
+}
+void setMat4(Shader shader, const char* name, glm::mat4 value) {
+    glad_glUniformMatrix4fv(glad_glGetUniformLocation(shader.id, name), 1, GL_FALSE, glm::value_ptr(value));
 }

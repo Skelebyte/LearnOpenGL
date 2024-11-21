@@ -9,6 +9,8 @@
 
 using namespace std;
 
+
+
 const char* readFile(const char* path);
 void checkIfShaderCompileSuccess(unsigned int shader, const char* desc);
 void checkIfShaderProgramLinkSuccess(unsigned int shaderProgram);
