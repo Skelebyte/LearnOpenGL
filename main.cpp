@@ -1,5 +1,3 @@
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/trigonometric.hpp>
 #define GLFW_INCLUDE_NONE
 #define STB_IMAGE_IMPLEMENTATION
 #include <iostream>
@@ -9,14 +7,24 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "libs/glad/glad.h"
 #include "include/Shader.h"
-#include "include/Utils.h"
 #include "include/Texture.h"
 
 using namespace std;
 
+#define uint unsigned int
+
 int WIDTH = 800;
 int HEIGHT = 600;
-#define uint unsigned int
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+
+
 
 void setUp() {
     cout<<"Setting up..."<<endl;
@@ -40,9 +48,14 @@ int cleanUp(GLFWwindow* window, uint vao, uint vbo, uint ebo) {
 }
 
 bool isWireframe = false;
-void keyCallback(GLFWwindow*, int key, int scancode, int action, int mods) {
-    if(key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+bool pressed;
+void input(GLFWwindow* window) {
+    if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && !pressed) {
         isWireframe = !isWireframe;
+        pressed = true;
+    }
+    if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE && pressed) {
+        pressed = false;
     }
 }
 float vertices[] = {
@@ -158,9 +171,8 @@ int main() {
     glad_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glad_glEnableVertexAttribArray(1);
 
-    uint texture = loadTexture("data/SkelebyteSkull.png", ImageType::PNG);
+    uint texture = loadTexture("data/dude.png", ImageType::PNG);
 
-    glfwSetKeyCallback(window, keyCallback);
 
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -177,6 +189,8 @@ int main() {
     while(!glfwWindowShouldClose(window)) {
 
         glfwGetWindowSize(window, &WIDTH, &HEIGHT);
+
+        input(window);
 
         glad_glViewport(0, 0, WIDTH, HEIGHT);
 
@@ -210,15 +224,9 @@ int main() {
         int modelLocation = glad_glGetUniformLocation(shader.id, "model");
         glad_glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
-        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-        glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
-        float radius = 00.0f;
+        float radius = 10.0f;
         float speed = 0.5f;
         glm::mat4 view;
         float cameraX = sin(glfwGetTime() * speed) * radius;
