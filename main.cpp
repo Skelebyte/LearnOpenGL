@@ -1,17 +1,8 @@
-#define GLFW_INCLUDE_NONE
-#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include "libs/glad/glad.h"
-#include "include/Shader.h"
-#include "include/Texture.h"
+#include "include/Hazrd.h"
 
 using namespace std;
-
-#define uint unsigned int
 
 int WIDTH = 800;
 int HEIGHT = 600;
@@ -37,11 +28,11 @@ void setUp() {
 
     stbi_set_flip_vertically_on_load(true);
 }
-int cleanUp(GLFWwindow* window, uint vao, uint vbo, uint ebo) {
+int cleanUp(GLFWwindow* window, BufferObjects objects) {
     cout<<"Cleaning up..."<<endl;
-    glad_glDeleteVertexArrays(1, &vao);
-    glad_glDeleteBuffers(1, &vbo);
-    glad_glDeleteBuffers(1, &ebo);
+    glad_glDeleteVertexArrays(1, &objects.VAO);
+    glad_glDeleteBuffers(1, &objects.VBO);
+    glad_glDeleteBuffers(1, &objects.EBO);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
@@ -102,7 +93,7 @@ float vertices[] = {
     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-unsigned int indices[] = { // note that we start from 0!
+uint indices[] = { // note that we start from 0!
     0, 1, 3, // first triangle
     1, 2, 3 // second triangle
 };
@@ -149,27 +140,10 @@ int main() {
 
     Shader shader = newShader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
 
-    uint vao;
-    uint vbo;
-    uint ebo;
-    glad_glGenVertexArrays(1, &vao);
-    glad_glGenBuffers(1, &vbo);
-    glad_glGenBuffers(1, &ebo);
 
-    glad_glBindVertexArray(vao);
 
-    glad_glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glad_glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    BufferObjects bufferObjects = bindBuffersAndObjects(vertices, sizeof(vertices), indices, sizeof(indices));
 
-    glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glad_glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glad_glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glad_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glad_glEnableVertexAttribArray(1);
 
     uint texture = loadTexture("data/dude.png", ImageType::PNG);
 
@@ -182,8 +156,8 @@ int main() {
     glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
-    glm::mat4 view;
-    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // glm::mat4 view;
+    // view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
     while(!glfwWindowShouldClose(window)) {
@@ -200,7 +174,7 @@ int main() {
         glad_glBindTexture(GL_TEXTURE_2D, texture);
 
         useShader(shader);
-        glad_glBindVertexArray(vao);
+        glad_glBindVertexArray(bufferObjects.VAO);
         for(uint i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
@@ -248,5 +222,5 @@ int main() {
     }
 
 
-    return cleanUp(window, vao, vbo, ebo);
+    return cleanUp(window, bufferObjects);
 }
