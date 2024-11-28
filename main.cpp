@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <unistd.h>
 #include "include/Hazrd.h"
 
 using namespace std;
@@ -39,15 +40,38 @@ int cleanUp(GLFWwindow* window, BufferObjects objects) {
 }
 
 bool isWireframe = false;
+bool noTextureMode = false;
 bool pressed;
+
+Bind* wireframe = new Bind(Keys::KEY_F1, KeyAction::PRESS);
+Bind* textureMode = new Bind(Keys::KEY_F2, KeyAction::PRESS);
+
 void input(GLFWwindow* window) {
-    if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && !pressed) {
+    Input.checkInput(window, wireframe);
+    Input.checkInput(window, textureMode);
+
+    if(wireframe->isActive()) {
         isWireframe = !isWireframe;
-        pressed = true;
     }
-    if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE && pressed) {
-        pressed = false;
+    if(textureMode->isActive()) {
+        noTextureMode = !noTextureMode;
     }
+
+    // if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && !pressed) {
+    //     isWireframe = !isWireframe;
+    //     pressed = true;
+    // }
+    // if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE && pressed) {
+    //     pressed = false;
+    // }
+
+    // if(glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS && !pressed) {
+    //     noTextureMode = !noTextureMode;
+    //     pressed = true;
+    // }
+    // if(glfwGetKey(window, GLFW_KEY_F2) == GLFW_RELEASE && pressed) {
+    //     pressed = false;
+    // }
 }
 float vertices[] = {
     // positions         // texture coords
@@ -138,14 +162,15 @@ int main() {
     glad_glEnable(GL_DEPTH_TEST);
 
 
-    Shader shader = newShader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
+    Shader* shader = new Shader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
 
 
 
     BufferObjects bufferObjects = bindBuffersAndObjects(vertices, sizeof(vertices), indices, sizeof(indices));
 
 
-    uint texture = loadTexture("data/dude.png", ImageType::PNG);
+    uint texture = Texture::load("data/dude.png", ImageType::PNG);
+    uint noTexture = Texture::load("data/engine/NoTexture_Grey.png", ImageType::PNG);
 
 
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -156,8 +181,8 @@ int main() {
     glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
-    // glm::mat4 view;
-    // view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view;
+    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 
     while(!glfwWindowShouldClose(window)) {
@@ -171,19 +196,30 @@ int main() {
         glad_glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glad_glBindTexture(GL_TEXTURE_2D, texture);
 
-        useShader(shader);
+
+        shader->use();
         glad_glBindVertexArray(bufferObjects.VAO);
         for(uint i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = (float)glfwGetTime() * (20.0f * i);
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            setMat4(shader, "model", model);
-            glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+            if(i == 0) {
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, cubePositions[i]);
+                float angle = (float)glfwGetTime() * (20.0f * i);
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                shader->setMat4("model", model);
+                glad_glBindTexture(GL_TEXTURE_2D, texture);
+                glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+            } else {
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, cubePositions[i]);
+                float angle = (float)glfwGetTime() * (20.0f * i);
+                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                shader->setMat4("model", model);
+                glad_glBindTexture(GL_TEXTURE_2D, noTexture);
+                glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
         }
-        glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
         glfwSwapBuffers(window);
 
@@ -192,10 +228,15 @@ int main() {
         } else {
             glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
         }
+        // if(noTextureMode) {
+        //     glad_glBindTexture(GL_TEXTURE_2D, noTexture);
+        // } else {
+        //     glad_glBindTexture(GL_TEXTURE_2D, texture);
+        // }
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        int modelLocation = glad_glGetUniformLocation(shader.id, "model");
+        int modelLocation = glad_glGetUniformLocation(shader->id, "model");
         glad_glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
 
@@ -207,18 +248,17 @@ int main() {
         float cameraZ = cos(glfwGetTime() * speed) * radius;
 
         view = glm::lookAt(glm::vec3(cameraX, 0.0f, cameraZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        int viewLocation = glad_glGetUniformLocation(shader.id, "view");
+        int viewLocation = glad_glGetUniformLocation(shader->id, "view");
         glad_glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
 
 
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
-        int projectionLocation = glad_glGetUniformLocation(shader.id, "projection");
+        int projectionLocation = glad_glGetUniformLocation(shader->id, "projection");
         glad_glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-
-
         glfwPollEvents();
+
     }
 
 

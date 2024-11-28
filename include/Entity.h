@@ -14,9 +14,9 @@
 class Entity {
     public:
     bool active;
-    vector3 position;
-    rotation3 rotation;
-    vector3 scale;
+    // vector3 position;
+    // Rotation3 rotation;
+    // vector3 scale;
 };
 
 #endif

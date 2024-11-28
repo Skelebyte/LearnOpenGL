@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Utils.h"
 #include "Renderer.h"
+#include "Input.h"
 
 /* EXTERNAL HEADERS */
 // some external librarys are inside the libs directory, such as glad.
@@ -17,3 +18,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../libs/glad/glad.h"
 #include "../libs/stb_image.h"
+
+
+Input Input;

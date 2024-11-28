@@ -46,6 +46,11 @@ typedef struct BufferObjects {
     uint EBO = 2;
 } BufferObjects;
 
+class Renderer {
+    public:
+    static int numberOfTextures;
+};
+
 inline BufferObjects bindBuffersAndObjects(float vertices[], int verticesSize, const uint* indices, int indicesSize) {
 
     cout<<indices[1]<<endl;
