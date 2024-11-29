@@ -58,13 +58,10 @@ inline BufferObjects bindBuffersAndObjects(float vertices[], int verticesSize, c
     BufferObjects bo{0};
 
     glad_glGenVertexArrays(1, &bo.VAO);
-    std::cout << "Generated VAO: " << bo.VAO << "\n";
 
     glad_glGenBuffers(1, &bo.VBO);
-    std::cout << "Generated VBO: " << bo.VBO << "\n";
 
     glad_glGenBuffers(1, &bo.EBO);
-    std::cout << "Generated EBO: " << bo.EBO << "\n";
 
 
 
@@ -82,8 +79,6 @@ inline BufferObjects bindBuffersAndObjects(float vertices[], int verticesSize, c
     // texture coord attribute
     glad_glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glad_glEnableVertexAttribArray(1);
-
-    cout<<"bound stuff!"<<endl;
 
 
     // GLint currentVAO, currentVBO, currentEBO;

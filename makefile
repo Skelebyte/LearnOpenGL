@@ -3,7 +3,7 @@
 # src/*.cpp
 
 compile:
-	g++ -o Program.x86_64 main.cpp libs/glad/glad.c -lglfw -lm
+	g++ -o Program.x86_64 main.cpp Hazrd/libs/glad/glad.c -lglfw -lm
 
 
 run: compile

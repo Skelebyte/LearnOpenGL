@@ -8,17 +8,18 @@
 #include "../libs/glad/glad.h"
 #include "Utils.h"
 
-#define DEFAULT_VERTEX_SHADER_SRC File::readFile("shaders/Default.vert", "rb");
-#define DEFAULT_FRAGMENT_SHADER_SRC File::readFile("shaders/Default.frag", "rb");
+#define DEFAULT_VERTEX_SHADER_SRC File::readFile("data/shaders/Default.vert", "rb");
+#define DEFAULT_FRAGMENT_SHADER_SRC File::readFile("data/shaders/Default.frag", "rb");
 
-#define DEFAULT_VERTEX_SHADER_PATH "shaders/Default.vert"
-#define DEFAULT_FRAGMENT_SHADER_PATH "shaders/Default.frag"
+#define DEFAULT_VERTEX_SHADER_PATH "data/shaders/Default.vert"
+#define DEFAULT_FRAGMENT_SHADER_PATH "data/shaders/Default.frag"
 
 
 class Shader {
     public:
     uint id;
     public:
+    Shader() {}
     Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
         uint vertex;
         uint fragment;

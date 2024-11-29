@@ -1,7 +1,11 @@
 
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_geometric.hpp>
+#include <glm/geometric.hpp>
 #include <iostream>
 #include <unistd.h>
-#include "include/Hazrd.h"
+#include "Hazrd/Hazrd.h"
+#include "Hazrd/include/GameObjects.h"
 
 using namespace std;
 
@@ -39,84 +43,178 @@ int cleanUp(GLFWwindow* window, BufferObjects objects) {
     return 0;
 }
 
-bool isWireframe = false;
-bool noTextureMode = false;
-bool pressed;
 
-Bind* wireframe = new Bind(Keys::KEY_F1, KeyAction::PRESS);
-Bind* textureMode = new Bind(Keys::KEY_F2, KeyAction::PRESS);
+
+EditorCamera3D camera;
+Shader shader;
+// Camera3D camera;
+
+// Bind wireframe = Bind(Keys::KEY_F1, KeyAction::PRESS);
+// Bind textureMode = Bind(Keys::KEY_F2, KeyAction::PRESS);
+// Bind cameraMode = Bind(Keys::KEY_F3, KeyAction::PRESS);
+
+// float speed = 0.05f;
+// float sens = 100.0f;
+// Bind moveUp = Bind(Keys::KEY_Q, KeyAction::HOLD);
+// Bind moveDown = Bind(Keys::KEY_E, KeyAction::HOLD);
+// Bind moveForward = Bind(Keys::KEY_W, KeyAction::HOLD);
+// Bind moveBackward = Bind(Keys::KEY_S, KeyAction::HOLD);
+// Bind moveLeft = Bind(Keys::KEY_A, KeyAction::HOLD);
+// Bind moveRight = Bind(Keys::KEY_D, KeyAction::HOLD);
+// Bind look = Bind(Keys::MOUSE_RIGHT, KeyAction::HOLD, IS_MOUSE_BIND);
+
 
 void input(GLFWwindow* window) {
-    Input.checkInput(window, wireframe);
-    Input.checkInput(window, textureMode);
+    // Input::checkInput(window, wireframe);
+    // Input::checkInput(window, textureMode);
+    // Input::checkInput(window, cameraMode);
 
-    if(wireframe->isActive()) {
-        isWireframe = !isWireframe;
-    }
-    if(textureMode->isActive()) {
-        noTextureMode = !noTextureMode;
-    }
+    // Input::checkInput(window, moveUp);
+    // Input::checkInput(window, moveDown);
+    // Input::checkInput(window, moveForward);
+    // Input::checkInput(window, moveBackward);
+    // Input::checkInput(window, moveLeft);
+    // Input::checkInput(window, moveRight);
+    // Input::checkInput(window, look);
 
-    // if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS && !pressed) {
+    // if(wireframe.isActive()) {
     //     isWireframe = !isWireframe;
-    //     pressed = true;
+    //     Debug::log("Toggle wireframe", Severity::INFO);
     // }
-    // if(glfwGetKey(window, GLFW_KEY_F1) == GLFW_RELEASE && pressed) {
-    //     pressed = false;
+    // if(textureMode.isActive()) {
+    //     noTextureMode = !noTextureMode;
+    // }
+    // if(cameraMode.isActive()) {
+    //     isPerspective = !isPerspective;
     // }
 
-    // if(glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS && !pressed) {
-    //     noTextureMode = !noTextureMode;
-    //     pressed = true;
+    // // Up/Down
+    // if(moveUp.isActive()) {
+    //     camera.position += camera.cameraUp * speed;
     // }
-    // if(glfwGetKey(window, GLFW_KEY_F2) == GLFW_RELEASE && pressed) {
-    //     pressed = false;
+    // if(moveDown.isActive()) {
+    //     camera.position -= camera.cameraUp * speed;
+    // }
+
+    // // Forwards/Backwards
+    // if(moveForward.isActive()) {
+    //     camera.position += camera.orientation * speed;
+    // }
+    // if(moveBackward.isActive()) {
+    //     camera.position -= camera.orientation * speed;
+    // }
+
+    // // Left/Right
+    // if(moveLeft.isActive()) {
+    //     camera.position -= glm::normalize(glm::cross(camera.orientation, camera.cameraUp)) * speed;
+    // }
+    // if(moveRight.isActive()) {
+    //     camera.position += glm::normalize(glm::cross(camera.orientation, camera.cameraUp)) * speed;
+    // }
+
+    // if(look.isActive()) {
+    //     Input::hideCursor(window);
+    //     VECTOR3 mousePos = Input::getMousePosition(window);
+
+
+    //     float rotX = sens * (mousePos.y - ((float)HEIGHT / 2)) / (float)HEIGHT;
+    //     float rotY = sens * (mousePos.x - ((float)WIDTH / 2)) / (float)WIDTH;
+
+    //     VECTOR3 newOrientation = glm::rotate(camera.orientation, glm::radians(-rotX), glm::normalize(glm::cross(camera.orientation, camera.cameraUp)));
+
+    //     if(abs(glm::angle(newOrientation, camera.cameraUp) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
+    //         camera.orientation = newOrientation;
+    //     }
+
+    //     camera.orientation = glm::rotate(camera.orientation, glm::radians(-rotY), camera.cameraUp);
+
+    //     Input::setMousePosition(window, VECTOR3((float)WIDTH / 2, (float)HEIGHT / 2, 0.0f));
+    // } else {
+    //     Input::showCursor(window);
     // }
 }
 float vertices[] = {
-    // positions         // texture coords
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    // back face
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 0.0f, // bottom-left
+	0.5f, 0.5f, -0.5f,
+	1.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f,
+	1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, -0.5f,
+	1.0f, 1.0f, // top-right
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 0.0f, // bottom-left
+	-0.5f, 0.5f, -0.5f,
+	0.0f, 1.0f, // top-left
+	// front face
+	-0.5f, -0.5f, 0.5f,
+	0.0f, 0.0f, // bottom-left
+	0.5f, -0.5f, 0.5f,
+	1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, 0.5f,
+	1.0f, 1.0f, // top-right
+	0.5f, 0.5f, 0.5f,
+	1.0f, 1.0f, // top-right
+	-0.5f, 0.5f, 0.5f,
+	0.0f, 1.0f, // top-left
+	-0.5f, -0.5f, 0.5f,
+	0.0f, 0.0f, // bottom-left
+	// left face
+	-0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // top-right
+	-0.5f, 0.5f, -0.5f,
+	1.0f, 1.0f, // top-left
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f, 0.5f,
+	0.0f, 0.0f, // bottom-right
+	-0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // top-right
+	// right face
+	0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // top-left
+	0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // bottom-right
+	0.5f, 0.5f, -0.5f,
+	1.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // bottom-right
+	0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // top-left
+	0.5f, -0.5f, 0.5f,
+	0.0f, 0.0f, // bottom-left
+	// bottom face
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f,
+	1.0f, 1.0f, // top-left
+	0.5f, -0.5f, 0.5f,
+	1.0f, 0.0f, // bottom-left
+	0.5f, -0.5f, 0.5f,
+	1.0f, 0.0f, // bottom-left
+	-0.5f, -0.5f, 0.5f,
+	0.0f, 0.0f, // bottom-right
+	-0.5f, -0.5f, -0.5f,
+	0.0f, 1.0f, // top-right
+	// top face
+	-0.5f, 0.5f, -0.5f,
+	0.0f, 1.0f, // top-left
+	0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, -0.5f,
+	1.0f, 1.0f, // top-right
+	0.5f, 0.5f, 0.5f,
+	1.0f, 0.0f, // bottom-right
+	-0.5f, 0.5f, -0.5f,
+	0.0f, 1.0f, // top-left
+	-0.5f, 0.5f, 0.5f,
+	0.0f, 0.0f // bottom-left
 };
+
+
 uint indices[] = { // note that we start from 0!
     0, 1, 3, // first triangle
     1, 2, 3 // second triangle
@@ -160,30 +258,27 @@ int main() {
 
 
     glad_glEnable(GL_DEPTH_TEST);
+    glad_glEnable(GL_CULL_FACE);
+    glad_glCullFace(GL_BACK);
+    glad_glFrontFace(GL_CCW);
 
 
-    Shader* shader = new Shader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
-
+    shader = Shader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
+    camera = EditorCamera3D(window, shader);
+    // camera = Camera3D(shader);
+    // camera.mode = CameraMode::PERSPECTIVE;
 
 
     BufferObjects bufferObjects = bindBuffersAndObjects(vertices, sizeof(vertices), indices, sizeof(indices));
 
 
-    uint texture = Texture::load("data/dude.png", ImageType::PNG);
+    uint texture = Texture::load("data/textures/alita1.jpg", ImageType::JPG);
     uint noTexture = Texture::load("data/engine/NoTexture_Grey.png", ImageType::PNG);
 
 
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
-    glm::mat4 view;
-    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
+    // camera.position.z = 10;
 
     while(!glfwWindowShouldClose(window)) {
 
@@ -198,7 +293,7 @@ int main() {
 
 
 
-        shader->use();
+        shader.use();
         glad_glBindVertexArray(bufferObjects.VAO);
         for(uint i = 0; i < 10; i++) {
             if(i == 0) {
@@ -206,7 +301,7 @@ int main() {
                 model = glm::translate(model, cubePositions[i]);
                 float angle = (float)glfwGetTime() * (20.0f * i);
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                shader->setMat4("model", model);
+                shader.setMat4("model", model);
                 glad_glBindTexture(GL_TEXTURE_2D, texture);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             } else {
@@ -214,7 +309,7 @@ int main() {
                 model = glm::translate(model, cubePositions[i]);
                 float angle = (float)glfwGetTime() * (20.0f * i);
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                shader->setMat4("model", model);
+                shader.setMat4("model", model);
                 glad_glBindTexture(GL_TEXTURE_2D, noTexture);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             }
@@ -223,41 +318,33 @@ int main() {
 
         glfwSwapBuffers(window);
 
-        if(isWireframe) {
-            glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
-        } else {
-            glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
-        }
-        // if(noTextureMode) {
-        //     glad_glBindTexture(GL_TEXTURE_2D, noTexture);
+        camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
+
+        // if(isWireframe) {
+        //     glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
         // } else {
-        //     glad_glBindTexture(GL_TEXTURE_2D, texture);
+        //     glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
         // }
+        // if(isPerspective) {
+        //     camera.mode = CameraMode::PERSPECTIVE;
+        // } else {
+        //     camera.mode = CameraMode::ORTHOGRAPHIC;
+        // }
+
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        int modelLocation = glad_glGetUniformLocation(shader->id, "model");
+        int modelLocation = glad_glGetUniformLocation(shader.id, "model");
         glad_glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
 
+        // camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
 
-
-        float radius = 10.0f;
-        float speed = 0.5f;
-        glm::mat4 view;
-        float cameraX = sin(glfwGetTime() * speed) * radius;
-        float cameraZ = cos(glfwGetTime() * speed) * radius;
-
-        view = glm::lookAt(glm::vec3(cameraX, 0.0f, cameraZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        int viewLocation = glad_glGetUniformLocation(shader->id, "view");
-        glad_glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
-
-
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.01f, 100.0f);
-        int projectionLocation = glad_glGetUniformLocation(shader->id, "projection");
-        glad_glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
         glfwPollEvents();
+
+
+
+
 
     }
 

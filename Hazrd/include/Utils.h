@@ -1,6 +1,7 @@
-#ifndef FILEUTILS_H
-#define FILEUTILS_H
+#ifndef UTILS_H
+#define UTILS_H
 
+#include <glm/detail/qualifier.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,9 +9,10 @@
 #include <ctime>
 #include <glm/glm.hpp>
 #include "../libs/glad/glad.h"
-#include "Debug.h"
 
 using namespace std;
+
+
 
 enum RotationOrder {
     XYZ,
@@ -22,35 +24,57 @@ enum RotationOrder {
 };
 
 class Vector3 {
-    protected:
-    glm::vec3 position;
+    public:
+    glm::vec3 glmVec3;
 
     public:
+    Vector3() {
+        glmVec3 = glm::vec3(0.0f, 0.0f, 0.0f);
+    }
+    Vector3(float x, float y, float z) {
+        glmVec3 = glm::vec3(x, y, z);
+    }
+
     const float x() {
-        return position.x;
+        return glmVec3.x;
     }
     const float y() {
-        return position.y;
+        return glmVec3.y;
     }
     const float z() {
-        return position.z;
+        return glmVec3.z;
     }
 
     void setX(float value) {
-        position.x = value;
+        glmVec3.x = value;
     }
     void setY(float value) {
-        position.y = value;
+        glmVec3.y = value;
     }
     void setZ(float value) {
-        position.z = value;
+        glmVec3.z = value;
     }
 
     Vector3& operator+=(const Vector3 &value) {
-        position += value.position;
+        glmVec3 += value.glmVec3;
         return *this;
     }
+
+    public:
+    static Vector3 up() {
+        return Vector3(0.0f, 1.0f, 0.0f);
+    }
+    static Vector3 down() {
+        return Vector3(0.0f, -1.0f, 0.0f);
+    }
+    static Vector3 forward() {
+        return Vector3(0.0f, 0.0f, -1.0f);
+    }
+    static Vector3 back() {
+        return Vector3(0.0f, 0.0f, 1.0f);
+    }
 };
+
 
 // class Rotation3 {
 //     public:
