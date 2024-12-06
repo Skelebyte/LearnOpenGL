@@ -186,6 +186,12 @@ class Debug {
 
         writeFile(("data/logs/" + dateString + ".log").c_str(), line.c_str());
     }
+    static void logOpenGLError() {
+        GLenum error = glad_glGetError();
+        if(error != GL_NO_ERROR) {
+            log("OpenGL Error: " + to_string(error), Severity::CRITICAL);
+        }
+    }
     private:
     static void writeFile(const char* path, const char* content) {
         ofstream file;

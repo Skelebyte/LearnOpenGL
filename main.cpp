@@ -204,8 +204,14 @@ int main() {
         shader.setVec3("light.diffuse", VEC3(sin(glfwGetTime() * 0.5f), sin(glfwGetTime() * 0.25f), sin(glfwGetTime() * 0.75f)));
         shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
 
-        shader.setVec3("material.ambient", VEC3(1.0f, 1.0f, 1.0f));
-        shader.setVec3("material.diffuse", VEC3(1.0f, 1.0f, 1.0f));
+
+        // A note about the texture loading for meshes...
+        /*
+            it looks like if i do glad_glBindTexture() before i draw the mesh with glad_glDrawArrays
+            it will give the mesh drawn that texture, which is nice.
+        */
+        shader.setInt("material.texture", texture.id);
+        shader.setVec3("material.baseColor", VEC3(1.0f, 1.0f, 1.0f));
         shader.setVec3("material.specular", VEC3(0.5f, 0.5f,0.5f));
         shader.setFloat("material.shininess", 32.0f);
 
@@ -224,6 +230,8 @@ int main() {
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
                 shader.setMat4("model", model);
                 // shader.setVec3("objectColor", VEC3(100.0f, 100.0f, 100.0f));
+
+                glad_glActiveTexture(GL_TEXTURE0 + texture.id);
                 glad_glBindTexture(GL_TEXTURE_2D, texture.id);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             } else {
@@ -234,10 +242,12 @@ int main() {
                 shader.setMat4("model", model);
                 // shader.setVec3("objectColor", VEC3(1.0f, 1.0f, 0.31f));
 
+                // glad_glActiveTexture(GL_TEXTURE0 + noTexture.id); <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
                 glad_glBindTexture(GL_TEXTURE_2D, noTexture.id);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             }
         }
+
 
 
         glfwSwapBuffers(window);
