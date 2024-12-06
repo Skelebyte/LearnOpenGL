@@ -5,7 +5,10 @@
 #include <iostream>
 #include <unistd.h>
 #include "Hazrd/Hazrd.h"
-#include "Hazrd/include/GameObjects.h"
+#include "Hazrd/include/Defines.h"
+#include "Hazrd/include/Input.h"
+#include "Hazrd/include/Material.h"
+#include "Hazrd/include/Texture.h"
 
 using namespace std;
 
@@ -65,168 +68,62 @@ Shader shader;
 
 
 void input(GLFWwindow* window) {
-    // Input::checkInput(window, wireframe);
-    // Input::checkInput(window, textureMode);
-    // Input::checkInput(window, cameraMode);
-
-    // Input::checkInput(window, moveUp);
-    // Input::checkInput(window, moveDown);
-    // Input::checkInput(window, moveForward);
-    // Input::checkInput(window, moveBackward);
-    // Input::checkInput(window, moveLeft);
-    // Input::checkInput(window, moveRight);
-    // Input::checkInput(window, look);
-
-    // if(wireframe.isActive()) {
-    //     isWireframe = !isWireframe;
-    //     Debug::log("Toggle wireframe", Severity::INFO);
-    // }
-    // if(textureMode.isActive()) {
-    //     noTextureMode = !noTextureMode;
-    // }
-    // if(cameraMode.isActive()) {
-    //     isPerspective = !isPerspective;
-    // }
-
-    // // Up/Down
-    // if(moveUp.isActive()) {
-    //     camera.position += camera.cameraUp * speed;
-    // }
-    // if(moveDown.isActive()) {
-    //     camera.position -= camera.cameraUp * speed;
-    // }
-
-    // // Forwards/Backwards
-    // if(moveForward.isActive()) {
-    //     camera.position += camera.orientation * speed;
-    // }
-    // if(moveBackward.isActive()) {
-    //     camera.position -= camera.orientation * speed;
-    // }
-
-    // // Left/Right
-    // if(moveLeft.isActive()) {
-    //     camera.position -= glm::normalize(glm::cross(camera.orientation, camera.cameraUp)) * speed;
-    // }
-    // if(moveRight.isActive()) {
-    //     camera.position += glm::normalize(glm::cross(camera.orientation, camera.cameraUp)) * speed;
-    // }
-
-    // if(look.isActive()) {
-    //     Input::hideCursor(window);
-    //     VECTOR3 mousePos = Input::getMousePosition(window);
-
-
-    //     float rotX = sens * (mousePos.y - ((float)HEIGHT / 2)) / (float)HEIGHT;
-    //     float rotY = sens * (mousePos.x - ((float)WIDTH / 2)) / (float)WIDTH;
-
-    //     VECTOR3 newOrientation = glm::rotate(camera.orientation, glm::radians(-rotX), glm::normalize(glm::cross(camera.orientation, camera.cameraUp)));
-
-    //     if(abs(glm::angle(newOrientation, camera.cameraUp) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
-    //         camera.orientation = newOrientation;
-    //     }
-
-    //     camera.orientation = glm::rotate(camera.orientation, glm::radians(-rotY), camera.cameraUp);
-
-    //     Input::setMousePosition(window, VECTOR3((float)WIDTH / 2, (float)HEIGHT / 2, 0.0f));
-    // } else {
-    //     Input::showCursor(window);
-    // }
 }
 float vertices[] = {
-    // back face
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 0.0f, // bottom-left
-	0.5f, 0.5f, -0.5f,
-	1.0f, 1.0f, // top-right
-	0.5f, -0.5f, -0.5f,
-	1.0f, 0.0f, // bottom-right
-	0.5f, 0.5f, -0.5f,
-	1.0f, 1.0f, // top-right
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 0.0f, // bottom-left
-	-0.5f, 0.5f, -0.5f,
-	0.0f, 1.0f, // top-left
-	// front face
-	-0.5f, -0.5f, 0.5f,
-	0.0f, 0.0f, // bottom-left
-	0.5f, -0.5f, 0.5f,
-	1.0f, 0.0f, // bottom-right
-	0.5f, 0.5f, 0.5f,
-	1.0f, 1.0f, // top-right
-	0.5f, 0.5f, 0.5f,
-	1.0f, 1.0f, // top-right
-	-0.5f, 0.5f, 0.5f,
-	0.0f, 1.0f, // top-left
-	-0.5f, -0.5f, 0.5f,
-	0.0f, 0.0f, // bottom-left
-	// left face
-	-0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // top-right
-	-0.5f, 0.5f, -0.5f,
-	1.0f, 1.0f, // top-left
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // bottom-left
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // bottom-left
-	-0.5f, -0.5f, 0.5f,
-	0.0f, 0.0f, // bottom-right
-	-0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // top-right
-	// right face
-	0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // top-left
-	0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // bottom-right
-	0.5f, 0.5f, -0.5f,
-	1.0f, 1.0f, // top-right
-	0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // bottom-right
-	0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // top-left
-	0.5f, -0.5f, 0.5f,
-	0.0f, 0.0f, // bottom-left
-	// bottom face
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // top-right
-	0.5f, -0.5f, -0.5f,
-	1.0f, 1.0f, // top-left
-	0.5f, -0.5f, 0.5f,
-	1.0f, 0.0f, // bottom-left
-	0.5f, -0.5f, 0.5f,
-	1.0f, 0.0f, // bottom-left
-	-0.5f, -0.5f, 0.5f,
-	0.0f, 0.0f, // bottom-right
-	-0.5f, -0.5f, -0.5f,
-	0.0f, 1.0f, // top-right
-	// top face
-	-0.5f, 0.5f, -0.5f,
-	0.0f, 1.0f, // top-left
-	0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // bottom-right
-	0.5f, 0.5f, -0.5f,
-	1.0f, 1.0f, // top-right
-	0.5f, 0.5f, 0.5f,
-	1.0f, 0.0f, // bottom-right
-	-0.5f, 0.5f, -0.5f,
-	0.0f, 1.0f, // top-left
-	-0.5f, 0.5f, 0.5f,
-	0.0f, 0.0f // bottom-left
+    // positions          // normals           // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
+
 
 
 uint indices[] = { // note that we start from 0!
     0, 1, 3, // first triangle
     1, 2, 3 // second triangle
 };
-float textureCoords[] = {
-    0.0f, 0.0f, // lower left corner
-    1.0f, 0.0f, // lower right corner
-    0.5f, 1.0f, // top corner
-};
+
 // worldspace positions of cubes
 glm::vec3 cubePositions[] = {
-    glm::vec3( 0.0f,  0.0f,  0.0f),
+    glm::vec3( 1.0f,  1.0f,  1.0f),
     glm::vec3( 2.0f,  5.0f, -15.0f),
     glm::vec3(-1.5f, -2.2f, -2.5f),
     glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -258,29 +155,35 @@ int main() {
 
 
     glad_glEnable(GL_DEPTH_TEST);
-    glad_glEnable(GL_CULL_FACE);
-    glad_glCullFace(GL_BACK);
-    glad_glFrontFace(GL_CCW);
+    // glad_glEnable(GL_CULL_FACE);
+    // glad_glCullFace(GL_FRONT);
+    // glad_glFrontFace(GL_CCW);
 
 
     shader = Shader(DEFAULT_VERTEX_SHADER_PATH, DEFAULT_FRAGMENT_SHADER_PATH);
     camera = EditorCamera3D(window, shader);
-    // camera = Camera3D(shader);
-    // camera.mode = CameraMode::PERSPECTIVE;
+    camera.position = VEC3(1.0f, 1.0f, 1.0f);
 
 
-    BufferObjects bufferObjects = bindBuffersAndObjects(vertices, sizeof(vertices), indices, sizeof(indices));
+    BufferObjects bufferObjects = Renderer::bindBuffersAndObjects(vertices, sizeof(vertices), indices, sizeof(indices));
+
+    Texture texture;
+    texture.load("data/textures/alita1.jpg", ImageFormat::JPG);
+
+    Texture noTexture;
+    noTexture.load("data/engine/NoTexture_Grey.png", ImageFormat::PNG);
+
+    // Model model = Model::load("data/models/defaults/cube/Cube.obj", ModelFormat::OBJ);
 
 
-    uint texture = Texture::load("data/textures/alita1.jpg", ImageType::JPG);
-    uint noTexture = Texture::load("data/engine/NoTexture_Grey.png", ImageType::PNG);
 
-
-
-
-    // camera.position.z = 10;
+    // Material lightMaterial = Material("data/engine/NoTexture_White.png", ImageFormat::PNG);
+    // Material cubeMaterial = Material();
+    //
+    Bind moveLight = Bind(Keys::KEY_E, KeyAction::HOLD);
 
     while(!glfwWindowShouldClose(window)) {
+        Input::checkInput(window, moveLight);
 
         glfwGetWindowSize(window, &WIDTH, &HEIGHT);
 
@@ -288,12 +191,30 @@ int main() {
 
         glad_glViewport(0, 0, WIDTH, HEIGHT);
 
-        glad_glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
+        VEC3 ambientColor = VEC3(0.1f, 0.1f, 0.1f);
+
+        glad_glClearColor(ambientColor.x, ambientColor.y, ambientColor.z, 1.0f);
+
         glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-
         shader.use();
+        shader.setVec3("cameraPosition", camera.position);
+
+        shader.setVec3("light.ambient", VEC3(0.2f, 0.2f, 0.2f));
+        shader.setVec3("light.diffuse", VEC3(sin(glfwGetTime() * 0.5f), sin(glfwGetTime() * 0.25f), sin(glfwGetTime() * 0.75f)));
+        shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
+
+        shader.setVec3("material.ambient", VEC3(1.0f, 1.0f, 1.0f));
+        shader.setVec3("material.diffuse", VEC3(1.0f, 1.0f, 1.0f));
+        shader.setVec3("material.specular", VEC3(0.5f, 0.5f,0.5f));
+        shader.setFloat("material.shininess", 32.0f);
+
+
+
+        if(moveLight.isActive()) {
+            shader.setVec3("light.position", camera.position);
+        }
+
         glad_glBindVertexArray(bufferObjects.VAO);
         for(uint i = 0; i < 10; i++) {
             if(i == 0) {
@@ -302,7 +223,8 @@ int main() {
                 float angle = (float)glfwGetTime() * (20.0f * i);
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
                 shader.setMat4("model", model);
-                glad_glBindTexture(GL_TEXTURE_2D, texture);
+                // shader.setVec3("objectColor", VEC3(100.0f, 100.0f, 100.0f));
+                glad_glBindTexture(GL_TEXTURE_2D, texture.id);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             } else {
                 glm::mat4 model = glm::mat4(1.0f);
@@ -310,7 +232,9 @@ int main() {
                 float angle = (float)glfwGetTime() * (20.0f * i);
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
                 shader.setMat4("model", model);
-                glad_glBindTexture(GL_TEXTURE_2D, noTexture);
+                // shader.setVec3("objectColor", VEC3(1.0f, 1.0f, 0.31f));
+
+                glad_glBindTexture(GL_TEXTURE_2D, noTexture.id);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             }
         }
@@ -320,34 +244,11 @@ int main() {
 
         camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
 
-        // if(isWireframe) {
-        //     glad_glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw in wireframe
-        // } else {
-        //     glad_glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw with fill (not wireframe)
-        // }
-        // if(isPerspective) {
-        //     camera.mode = CameraMode::PERSPECTIVE;
-        // } else {
-        //     camera.mode = CameraMode::ORTHOGRAPHIC;
-        // }
-
-
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 0.0f, 0.0f));
-        int modelLocation = glad_glGetUniformLocation(shader.id, "model");
-        glad_glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-
-        // camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
-
+        glad_glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwPollEvents();
 
 
-
-
-
     }
-
-
     return cleanUp(window, bufferObjects);
 }

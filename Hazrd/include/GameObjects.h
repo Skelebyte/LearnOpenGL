@@ -1,9 +1,11 @@
 #ifndef GAMEOBJECTS_H
 #define GAMEOBJECTS_H
 
+#include "Defines.h"
 #include "Entity.h"
 #include "Shader.h"
 #include "Input.h"
+#include "Model.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,8 +32,8 @@ class Camera3D : public Entity {
 
     Shader shader;
 
-    VECTOR3 orientation = FORWARD;
-    VECTOR3 cameraUp = UP;
+    VEC3 orientation = VEC3_FORWARD;
+    VEC3 cameraUp = VEC3_UP;
 
     public:
     Camera3D() {}
@@ -71,22 +73,24 @@ class EditorCamera3D : public Entity {
     bool noTextureMode = false;
     bool isPerspective = true;
 
-    VECTOR3 orientation = FORWARD;
-    VECTOR3 cameraUp = UP;
+    VEC3 orientation = VEC3_FORWARD;
+    VEC3 cameraUp = VEC3_UP;
 
 
     Bind wireframe = Bind(Keys::KEY_F1, KeyAction::PRESS);
-    Bind cameraMode = Bind(Keys::KEY_F3, KeyAction::PRESS);
+    Bind cameraMode = Bind(Keys::KEY_F2, KeyAction::PRESS);
 
     float speed = 0.05f;
     float sens = 100.0f;
     Bind moveUp = Bind(Keys::KEY_Q, KeyAction::HOLD);
-    Bind moveDown = Bind(Keys::KEY_E, KeyAction::HOLD);
+    Bind moveDown = Bind(Keys::KEY_Z, KeyAction::HOLD);
     Bind moveForward = Bind(Keys::KEY_W, KeyAction::HOLD);
     Bind moveBackward = Bind(Keys::KEY_S, KeyAction::HOLD);
     Bind moveLeft = Bind(Keys::KEY_A, KeyAction::HOLD);
     Bind moveRight = Bind(Keys::KEY_D, KeyAction::HOLD);
     Bind look = Bind(Keys::MOUSE_RIGHT, KeyAction::HOLD, IS_MOUSE_BIND);
+    Bind zoomIn = Bind(Keys::KEY_UP, KeyAction::HOLD);
+    Bind zoomOut = Bind(Keys::KEY_DOWN, KeyAction::HOLD);
 
     public:
     EditorCamera3D() {}
@@ -136,6 +140,9 @@ class EditorCamera3D : public Entity {
         Input::checkInput(window, moveRight);
         Input::checkInput(window, look);
 
+        Input::checkInput(window, zoomIn);
+        Input::checkInput(window, zoomOut);
+
         if(wireframe.isActive()) {
             isWireframe = !isWireframe;
         }
@@ -169,14 +176,14 @@ class EditorCamera3D : public Entity {
         }
 
         if(look.isActive()) {
-            Input::hideCursor(window);
-            VECTOR3 mousePos = Input::getMousePosition(window);
+            Input::hideCursor(window, DISABLE_CURSOR);
+            VEC3 mousePos = VEC2_TO_VEC3(Input::getMousePosition(window));
 
 
             float rotX = sens * (mousePos.y - ((float)h / 2)) / (float)h;
             float rotY = sens * (mousePos.x - ((float)w / 2)) / (float)w;
 
-            VECTOR3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, cameraUp)));
+            VEC3 newOrientation = glm::rotate(orientation, glm::radians(-rotX), glm::normalize(glm::cross(orientation, cameraUp)));
 
             if(abs(glm::angle(newOrientation, cameraUp) - glm::radians(90.0f)) <= glm::radians(85.0f)) {
                 orientation = newOrientation;
@@ -184,12 +191,77 @@ class EditorCamera3D : public Entity {
 
             orientation = glm::rotate(orientation, glm::radians(-rotY), cameraUp);
 
-            Input::setMousePosition(window, VECTOR3((float)w / 2, (float)h / 2, 0.0f));
+            Input::setMousePosition(window, VEC3((float)w / 2, (float)h / 2, 0.0f));
         } else {
             Input::showCursor(window);
         }
+
+        if(zoomIn.isActive()) {
+            if(fov > 1) {
+                fov--;
+            } else {
+                fov = 1;
+            }
+
+        }
+        if(zoomOut.isActive()) {
+            if(fov < 150) {
+                fov++;
+            } else {
+                fov = 150;
+            }
+        }
+
     }
 };
+
+class Mesh : public Entity {
+    public:
+    Model model;
+
+    public:
+    Mesh(Model m) {
+        this->model = m;
+
+        setupMesh();
+    }
+
+    void draw(Shader shader) {
+
+    }
+
+    private:
+    uint VAO;
+    uint VBO;
+    uint EBO;
+
+    private:
+    void setupMesh() {
+        glad_glGenVertexArrays(1, &VAO);
+        glad_glGenBuffers(1, &VBO);
+        glad_glGenBuffers(1, &EBO);
+
+        glad_glBindVertexArray(VAO);
+        glad_glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+        glad_glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(Vertex), &model.vertices[0], GL_STATIC_DRAW);
+
+        glad_glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glad_glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.indices.size() * sizeof(uint), &model.indices[0], GL_STATIC_DRAW);
+
+        glad_glEnableVertexAttribArray(0);
+        glad_glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+        glad_glEnableVertexAttribArray(1);
+        glad_glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+        glad_glEnableVertexAttribArray(2);
+        glad_glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, textureCoords));
+
+        glad_glBindVertexArray(0);
+    }
+};
+
 
 /*
 view = glm::lookAt(glm::vec3(val1, 0, val2), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));

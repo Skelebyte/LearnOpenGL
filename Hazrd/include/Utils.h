@@ -142,10 +142,20 @@ class Debug {
         time_t time = std::time(nullptr);
         tm* currentTime = localtime(&time);
 
+        string AMOrPM;
         int hour = currentTime->tm_hour;
+
+        if(hour > 12) {
+            AMOrPM = " PM";
+            hour -= 12;
+        } else {
+            AMOrPM = " AM";
+        }
+
+
         int minute = currentTime->tm_min;
         int second = currentTime->tm_sec;
-        string timeString = (to_string(hour) + ":" + to_string(minute) + ":" + to_string(second));
+        string timeString = (to_string(hour) + ":" + to_string(minute) + ":" + to_string(second) + AMOrPM);
 
         int day = currentTime->tm_mday;
         int month = currentTime->tm_mon + 1;

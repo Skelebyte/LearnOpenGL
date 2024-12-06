@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../libs/glad/glad.h"
+#include "Defines.h"
 #include "Utils.h"
 
 #define DEFAULT_VERTEX_SHADER_SRC File::readFile("data/shaders/Default.vert", "rb");
@@ -58,6 +59,9 @@ class Shader {
     }
     void setFloat(const char* name, float value) {
         glad_glUniform1f(glad_glGetUniformLocation(id, name), value);
+    }
+    void setVec3(const char* name, VEC3 value) {
+        glad_glUniform3fv(glad_glGetUniformLocation(id, name), 1, glm::value_ptr(value));
     }
     void setMat4(const char* name, glm::mat4 value) {
         glad_glUniformMatrix4fv(glad_glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(value));

@@ -9,14 +9,19 @@
 
 #define MISSING_TEXTURE_PINK "data/engine/MissingTexture_Pink.png"
 
-enum ImageType {
+enum ImageFormat {
     PNG = 0,
     JPG = 1,
 };
 
 class Texture {
     public:
-    static uint load(string path, ImageType type) {
+    uint id;
+    string path;
+    ImageFormat format;
+
+    public:
+    void load(string path, ImageFormat type) {
         uint texture;
         glad_glGenTextures(1, &texture);
         glad_glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
@@ -30,7 +35,7 @@ class Texture {
         int width, height, nrChannels;
         unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
         if (data) {
-            if(type == ImageType::PNG) {
+            if(type == ImageFormat::PNG) {
                 glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             } else {
                 glad_glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -49,7 +54,10 @@ class Texture {
         }
         stbi_image_free(data);
 
-        return texture;
+
+        id = texture;
+        path = path;
+        format = type;
     }
 
 };

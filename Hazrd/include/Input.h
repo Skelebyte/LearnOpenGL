@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Utils.h"
-#include "Vector3.h"
+#include "Defines.h"
 
 using namespace std;
 
@@ -63,6 +63,13 @@ enum Keys {
     KEY_F10 = 299,
     KEY_F11 = 300,
     KEY_F12 = 301,
+
+    // arrow keys
+    KEY_RIGHT = 262,
+    KEY_LEFT = 263,
+    KEY_DOWN = 264,
+    KEY_UP = 265,
+
 
 };
 
@@ -136,17 +143,17 @@ class Input {
         }
     }
 
-    static VECTOR3 getMousePosition(GLFWwindow* window) {
+    static VEC2 getMousePosition(GLFWwindow* window) {
         double x;
         double y;
 
         glfwGetCursorPos(window, &x, &y);
 
-        return VECTOR3((float)x, (float)y, 0.0f);
+        return VEC2((float)x, (float)y);
 
     }
 
-    static void setMousePosition(GLFWwindow* window, VECTOR3 position) {
+    static void setMousePosition(GLFWwindow* window, VEC3 position) {
         glfwSetCursorPos(window, position.x, position.y);
     }
 
