@@ -3,17 +3,38 @@
 struct Material {
     sampler2D texture;
     vec3 baseColor;
-    vec3 specular;
+    sampler2D specular;
     float shininess;
 };
 
-struct Light {
+// struct Light {
+//     vec3 position;
+
+//     vec3 ambient;
+//     vec3 diffuse;
+//     vec3 specular;
+// };
+
+struct Light { // Point
     vec3 position;
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
+
+// struct Light { // Directional
+//     // vec3 position; not useful with directional lights
+//     vec3 direction;
+
+//     vec3 ambient;
+//     vec3 diffuse;
+//     vec3 specular;
+// };
 
 out vec4 FragColor;
 
@@ -36,6 +57,9 @@ uniform float shininess = 32; // 2, 4, 6, 8, 16, 32, 64, 128, 256
 
 void main()
 {
+    float distance = length(light.position - FragPos);
+    float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
     vec3 ambient = light.ambient * material.baseColor;
 
     vec3 norm = normalize(Normal);
@@ -46,8 +70,11 @@ void main()
     vec3 viewDirection = normalize(cameraPosition - FragPos);
     vec3 reflectDirection = reflect(-lightDirection, norm);
     float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
+    vec3 specular = light.specular * (spec * vec3(texture(material.specular, TexCoord)) * 10);
 
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
     vec3 result = ambient + diffuse + specular;
     FragColor = texture(material.texture, TexCoord) * vec4(result, 1.0);
 }

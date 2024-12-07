@@ -126,6 +126,7 @@ class EditorCamera3D : public Entity {
 
 
     }
+
     private:
     void cameraInput(int w, int h) {
 
@@ -177,7 +178,7 @@ class EditorCamera3D : public Entity {
 
         if(look.isActive()) {
             Input::hideCursor(window, DISABLE_CURSOR);
-            VEC3 mousePos = VEC2_TO_VEC3(Input::getMousePosition(window));
+            VEC2 mousePos = VEC2_TO_VEC3(Input::getMousePosition(window));
 
 
             float rotX = sens * (mousePos.y - ((float)h / 2)) / (float)h;

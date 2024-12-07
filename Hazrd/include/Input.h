@@ -153,7 +153,7 @@ class Input {
 
     }
 
-    static void setMousePosition(GLFWwindow* window, VEC3 position) {
+    static void setMousePosition(GLFWwindow* window, VEC2 position) {
         glfwSetCursorPos(window, position.x, position.y);
     }
 

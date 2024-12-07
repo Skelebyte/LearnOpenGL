@@ -1,0 +1,8 @@
+10:13:42 PM - [WARNING] Failed to load texture: data/textures/alitsdfaa1.jpg.
+10:26:55 PM - [CRITICAL] Failed to compile shader: 0(66) : error C1009: "direction" is not member of struct "Light"
+
+10:26:55 PM - [CRITICAL] Failed to link shader: Fragment info
+-------------
+0(66) : error C1009: "direction" is not member of struct "Light"
+(0) : error C2003: incompatible options for link
+

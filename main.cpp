@@ -172,6 +172,10 @@ int main() {
 
     Texture noTexture;
     noTexture.load("data/engine/NoTexture_Grey.png", ImageFormat::PNG);
+    Texture noTextureSpecular;
+    noTextureSpecular.load("data/engine/NoTexture_Specular.png", ImageFormat::PNG);
+    cout<<GL_TEXTURE0 + noTextureSpecular.id<<" <-- spec notexture + texture0"<<endl;
+    cout<<GL_TEXTURE0<<" <-- texture0"<<endl;
 
     // Model model = Model::load("data/models/defaults/cube/Cube.obj", ModelFormat::OBJ);
 
@@ -200,9 +204,14 @@ int main() {
         shader.use();
         shader.setVec3("cameraPosition", camera.position);
 
-        shader.setVec3("light.ambient", VEC3(0.2f, 0.2f, 0.2f));
-        shader.setVec3("light.diffuse", VEC3(sin(glfwGetTime() * 0.5f), sin(glfwGetTime() * 0.25f), sin(glfwGetTime() * 0.75f)));
+
+        // shader.setVec3("light.position", VEC3(-0.2f, -1.0f, -0.3f));
+        shader.setVec3("light.ambient", VEC3(0.1f, 0.1f, 0.1f));
+        shader.setVec3("light.diffuse", VEC3(1.0f, 1.0f, 1.0f));
         shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
+        shader.setFloat("light.constant", 1.0f);
+        shader.setFloat("light.linear", 0.09f);
+        shader.setFloat("light.quadratic", 0.032f);
 
 
         // A note about the texture loading for meshes...
@@ -212,7 +221,7 @@ int main() {
         */
         shader.setInt("material.texture", texture.id);
         shader.setVec3("material.baseColor", VEC3(1.0f, 1.0f, 1.0f));
-        shader.setVec3("material.specular", VEC3(0.5f, 0.5f,0.5f));
+        shader.setInt("material.specular", noTextureSpecular.id);
         shader.setFloat("material.shininess", 32.0f);
 
 
@@ -233,6 +242,8 @@ int main() {
 
                 glad_glActiveTexture(GL_TEXTURE0 + texture.id);
                 glad_glBindTexture(GL_TEXTURE_2D, texture.id);
+                glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             } else {
                 glm::mat4 model = glm::mat4(1.0f);
@@ -241,9 +252,13 @@ int main() {
                 model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
                 shader.setMat4("model", model);
                 // shader.setVec3("objectColor", VEC3(1.0f, 1.0f, 0.31f));
+                shader.setInt("material.texture", noTexture.id);
 
-                // glad_glActiveTexture(GL_TEXTURE0 + noTexture.id); <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                glad_glActiveTexture(GL_TEXTURE0 + noTexture.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
                 glad_glBindTexture(GL_TEXTURE_2D, noTexture.id);
+                glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
+
                 glad_glDrawArrays(GL_TRIANGLES, 0, 36);
             }
         }
