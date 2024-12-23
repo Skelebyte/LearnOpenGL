@@ -247,13 +247,14 @@ int main() {
             shader.setVec3("cameraPosition", camera.position);
 
 
-            // shader.setVec3("light.position", VEC3(-0.2f, -1.0f, -0.3f));
+            shader.setVec3("light.position", VEC3(-0.2f, -1.0f, -0.3f));
             shader.setVec3("light.ambient", VEC3(0.1f, 0.1f, 0.1f));
             shader.setVec3("light.diffuse", VEC3(1.0f, 1.0f, 1.0f));
             shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
             shader.setFloat("light.constant", 1.0f);
             shader.setFloat("light.linear", 0.09f);
             shader.setFloat("light.quadratic", 0.032f);
+            shader.setFloat("light.attenuation", 10.0f);
 
 
             // A note about the texture loading for meshes...
