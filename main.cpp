@@ -186,90 +186,138 @@ int main() {
     //
     Bind moveLight = Bind(Keys::KEY_E, KeyAction::HOLD);
 
+    //                 sec / fps 
+    double targetFPS = 1.0 / 999.0;
+    int fps;
+
+    double first;
+    double last  = glfwGetTime(); // get time in secs
+    float deltaTime;
+    double processedDeltaTime;
+
+    double frameTime;
+    int frames;
+    bool render;
+
     while(!glfwWindowShouldClose(window)) {
+        render = false;
+        first = glfwGetTime();
+        deltaTime = (first - last);
+        last = first;
+
+        processedDeltaTime += deltaTime;
+        frameTime += deltaTime;
+
+        while(processedDeltaTime >= targetFPS) {
+            processedDeltaTime -= targetFPS;
+            render = true;
+
+            if(frameTime >= 1.0) {
+                frameTime = 0;
+                fps = frames;
+                frames = 0;
+            }
+        } 
+        std::stringstream ss;
+        ss << fps << " FPS";
+
+        
+        
+        glfwSetWindowTitle(window, ss.str().c_str());
+
         Input::checkInput(window, moveLight);
 
         glfwGetWindowSize(window, &WIDTH, &HEIGHT);
 
         input(window);
 
-        glad_glViewport(0, 0, WIDTH, HEIGHT);
+        if(render) {
 
-        VEC3 ambientColor = VEC3(0.1f, 0.1f, 0.1f);
+            frames++;
 
-        glad_glClearColor(ambientColor.x, ambientColor.y, ambientColor.z, 1.0f);
+            glad_glViewport(0, 0, WIDTH, HEIGHT);
 
-        glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            VEC3 ambientColor = VEC3(0.1f, 0.1f, 0.1f);
 
-        shader.use();
-        shader.setVec3("cameraPosition", camera.position);
+            glad_glClearColor(ambientColor.x, ambientColor.y, ambientColor.z, 1.0f);
 
+            glad_glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // shader.setVec3("light.position", VEC3(-0.2f, -1.0f, -0.3f));
-        shader.setVec3("light.ambient", VEC3(0.1f, 0.1f, 0.1f));
-        shader.setVec3("light.diffuse", VEC3(1.0f, 1.0f, 1.0f));
-        shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
-        shader.setFloat("light.constant", 1.0f);
-        shader.setFloat("light.linear", 0.09f);
-        shader.setFloat("light.quadratic", 0.032f);
+            shader.use();
+            shader.setVec3("cameraPosition", camera.position);
 
 
-        // A note about the texture loading for meshes...
-        /*
-            it looks like if i do glad_glBindTexture() before i draw the mesh with glad_glDrawArrays
-            it will give the mesh drawn that texture, which is nice.
-        */
-        shader.setInt("material.texture", texture.id);
-        shader.setVec3("material.baseColor", VEC3(1.0f, 1.0f, 1.0f));
-        shader.setInt("material.specular", noTextureSpecular.id);
-        shader.setFloat("material.shininess", 32.0f);
+            // shader.setVec3("light.position", VEC3(-0.2f, -1.0f, -0.3f));
+            shader.setVec3("light.ambient", VEC3(0.1f, 0.1f, 0.1f));
+            shader.setVec3("light.diffuse", VEC3(1.0f, 1.0f, 1.0f));
+            shader.setVec3("light.specular", VEC3(1.0f, 1.0f, 1.0f));
+            shader.setFloat("light.constant", 1.0f);
+            shader.setFloat("light.linear", 0.09f);
+            shader.setFloat("light.quadratic", 0.032f);
+
+
+            // A note about the texture loading for meshes...
+            /*
+                it looks like if i do glad_glBindTexture() before i draw the mesh with glad_glDrawArrays
+                it will give the mesh drawn that texture, which is nice.
+            */
+            shader.setInt("material.texture", texture.id);
+            shader.setVec3("material.baseColor", VEC3(1.0f, 1.0f, 1.0f));
+            shader.setInt("material.specular", noTextureSpecular.id);
+            shader.setFloat("material.shininess", 32.0f);
 
 
 
-        if(moveLight.isActive()) {
-            shader.setVec3("light.position", camera.position);
-        }
-
-        glad_glBindVertexArray(bufferObjects.VAO);
-        for(uint i = 0; i < 10; i++) {
-            if(i == 0) {
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, cubePositions[i]);
-                float angle = (float)glfwGetTime() * (20.0f * i);
-                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                shader.setMat4("model", model);
-                // shader.setVec3("objectColor", VEC3(100.0f, 100.0f, 100.0f));
-
-                glad_glActiveTexture(GL_TEXTURE0 + texture.id);
-                glad_glBindTexture(GL_TEXTURE_2D, texture.id);
-                glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
-                glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
-                glad_glDrawArrays(GL_TRIANGLES, 0, 36);
-            } else {
-                glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, cubePositions[i]);
-                float angle = (float)glfwGetTime() * (20.0f * i);
-                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-                shader.setMat4("model", model);
-                // shader.setVec3("objectColor", VEC3(1.0f, 1.0f, 0.31f));
-                shader.setInt("material.texture", noTexture.id);
-
-                glad_glActiveTexture(GL_TEXTURE0 + noTexture.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
-                glad_glBindTexture(GL_TEXTURE_2D, noTexture.id);
-                glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
-                glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
-
-                glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+            if(moveLight.isActive()) {
+                shader.setVec3("light.position", camera.position);
             }
+
+            glad_glBindVertexArray(bufferObjects.VAO);
+            for(uint i = 0; i < 10; i++) {
+                if(i == 0) {
+                    glm::mat4 model = glm::mat4(1.0f);
+                    model = glm::translate(model, cubePositions[i]);
+                    float angle = (float)glfwGetTime() * (20.0f * i);
+                    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                    shader.setMat4("model", model);
+                    // shader.setVec3("objectColor", VEC3(100.0f, 100.0f, 100.0f));
+
+                    glad_glActiveTexture(GL_TEXTURE0 + texture.id);
+                    glad_glBindTexture(GL_TEXTURE_2D, texture.id);
+                    glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                    glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
+                    glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+                } else {
+                    glm::mat4 model = glm::mat4(1.0f);
+                    model = glm::translate(model, cubePositions[i]);
+                    float angle = (float)glfwGetTime() * (20.0f * i);
+                    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                    shader.setMat4("model", model);
+                    // shader.setVec3("objectColor", VEC3(1.0f, 1.0f, 0.31f));
+                    shader.setInt("material.texture", noTexture.id);
+
+                    glad_glActiveTexture(GL_TEXTURE0 + noTexture.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                    glad_glBindTexture(GL_TEXTURE_2D, noTexture.id);
+                    glad_glActiveTexture(GL_TEXTURE0 + noTextureSpecular.id); // <-- only works if i have multiple shaders and meshes with their own shader (which is the plan)
+                    glad_glBindTexture(GL_TEXTURE_2D, noTextureSpecular.id);
+
+                    glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+                }
+            
+            }
+
+
+
+            glfwSwapBuffers(window);
+
+            camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
+
+            glad_glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            
         }
 
 
-
-        glfwSwapBuffers(window);
-
-        camera.updateCamera(WIDTH, HEIGHT, "cameraMatrix");
-
-        glad_glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwPollEvents();
 
